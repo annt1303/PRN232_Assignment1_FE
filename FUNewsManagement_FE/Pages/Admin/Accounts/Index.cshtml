@@ -1,0 +1,84 @@
+﻿@page
+@model FUNewsManagement_FE.Pages.Admin.Accounts.IndexModel
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Quản lý tài khoản</h2>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo email..." value="@Model.Search" />
+        <button class="btn btn-outline-primary" type="submit">Tìm</button>
+    </div>
+</form>
+
+<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Thêm tài khoản</button>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var acc in Model.Accounts)
+        {
+            <tr>
+                <td>@acc.Email</td>
+                <td>@(acc.Role == 1 ? "Staff" : acc.Role == 2 ? "Lecturer" : "Unknown")</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" onclick="loadEdit('@acc.Id')">Sửa</button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@acc.Id')">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Create (popup) -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- TODO: Form tạo mới account -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit (popup) -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- TODO: Load form sửa bằng JS/AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadEdit(id) {
+            // TODO: Gọi API để load thông tin account theo id và hiển thị trong form popup
+        }
+
+        function confirmDelete(id) {
+            if (confirm("Bạn có chắc muốn xóa tài khoản này?")) {
+                // TODO: Gọi API DELETE /odata/Accounts(ID)
+            }
+        }
+    </script>
+}

@@ -1,0 +1,29 @@
+﻿@page
+@model FUNewsManagement_FE.Pages.LoginModel
+@{
+    Layout = "_Layout";
+}
+
+<h2 class="text-center mt-4">Đăng nhập hệ thống</h2>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

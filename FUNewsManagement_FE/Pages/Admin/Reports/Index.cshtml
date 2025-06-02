@@ -1,0 +1,49 @@
+﻿@page
+@model FUNewsManagement_FE.Pages.Admin.Reports.IndexModel
+@{
+    ViewData["Title"] = "Báo cáo bài viết";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Báo cáo thống kê bài viết</h2>
+
+<form method="get" class="row mb-4">
+    <div class="col-md-3">
+        <label for="start">Từ ngày:</label>
+        <input type="date" id="start" name="StartDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-3">
+        <label for="end">Đến ngày:</label>
+        <input type="date" id="end" name="EndDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">Xem báo cáo</button>
+    </div>
+</form>
+
+@if (Model.Stats?.Any() == true)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Ngày tạo</th>
+                <th>Người tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Stats)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.CreatedBy</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (Model.StartDate != null && Model.EndDate != null)
+{
+    <p>Không có dữ liệu trong khoảng thời gian đã chọn.</p>
+}

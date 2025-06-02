@@ -1,0 +1,35 @@
+﻿@page
+@model FUNewsManagement_FE.Pages.Staff.History.IndexModel
+@{
+    ViewData["Title"] = "Lịch sử bài viết của tôi";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Lịch sử bài viết</h2>
+
+@if (Model.NewsList?.Any() == true)
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.NewsList)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.Status == 1 ? "Active" : "Inactive")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Không có bài viết nào.</p>
+}

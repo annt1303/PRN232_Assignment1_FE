@@ -1,0 +1,28 @@
+﻿@page
+@model FUNewsManagement_FE.Pages.Staff.Profile.IndexModel
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Thông tin cá nhân</h2>
+
+<form method="post" class="col-md-6">
+    <div class="mb-3">
+        <label asp-for="Profile.Email" class="form-label">Email</label>
+        <input asp-for="Profile.Email" class="form-control" readonly />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Profile.FullName" class="form-label">Họ tên</label>
+        <input asp-for="Profile.FullName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Profile.Phone" class="form-label">Số điện thoại</label>
+        <input asp-for="Profile.Phone" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Profile.Address" class="form-label">Địa chỉ</label>
+        <input asp-for="Profile.Address" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+</form>
