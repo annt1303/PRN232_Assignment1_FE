@@ -5,8 +5,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpClient("ODataAPI", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5115/");
-});
+    client.BaseAddress = new Uri("http://localhost:5115/"); 
 
 builder.Services.AddSession();
 

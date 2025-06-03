@@ -1,23 +1,23 @@
 ﻿@page
 @model FUNewsManagement_FE.Pages.Admin.Reports.IndexModel
 @{
-    ViewData["Title"] = "Báo cáo bài viết";
+    ViewData["Title"] = "News Report";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Báo cáo thống kê bài viết</h2>
+<h2>News Statistics Report</h2>
 
 <form method="get" class="row mb-4">
     <div class="col-md-3">
-        <label for="start">Từ ngày:</label>
+        <label for="start">From date:</label>
         <input type="date" id="start" name="StartDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
     </div>
     <div class="col-md-3">
-        <label for="end">Đến ngày:</label>
+        <label for="end">To date:</label>
         <input type="date" id="end" name="EndDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
     </div>
     <div class="col-md-3 align-self-end">
-        <button type="submit" class="btn btn-primary">Xem báo cáo</button>
+        <button type="submit" class="btn btn-primary">View Report</button>
     </div>
 </form>
 
@@ -26,18 +26,24 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Tiêu đề</th>
-                <th>Ngày tạo</th>
-                <th>Người tạo</th>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Headline</th>
+                <th>Created Date</th>
+                <th>Content</th>
+                <th>Source</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Stats)
             {
                 <tr>
-                    <td>@item.Title</td>
-                    <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
-                    <td>@item.CreatedBy</td>
+                    <td>@item.NewsArticleId</td>
+                    <td>@item.NewsTitle</td>
+                    <td>@item.Headline</td>
+                    <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.NewsContent</td>
+                    <td>@item.NewsSource</td>
                 </tr>
             }
         </tbody>
@@ -45,5 +51,11 @@
 }
 else if (Model.StartDate != null && Model.EndDate != null)
 {
-    <p>Không có dữ liệu trong khoảng thời gian đã chọn.</p>
+    <p>No data available for the selected date range.</p>
+}
+
+@section Scripts {
+    <script>
+        // Optional JS section for future enhancements
+    </script>
 }

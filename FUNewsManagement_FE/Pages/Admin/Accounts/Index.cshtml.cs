@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace FUNewsManagement_FE.Pages.Admin.Accounts
 {
@@ -19,28 +20,37 @@ namespace FUNewsManagement_FE.Pages.Admin.Accounts
 
         public async Task OnGetAsync()
         {
-            var client = _httpClientFactory.CreateClient("ODataAPI");
-            string url = "Accounts";
+            var client = _httpClientFactory.CreateClient("ODataAPI"); 
+            string url = "api/SystemAccount";
+
             if (!string.IsNullOrWhiteSpace(Search))
             {
-                url += $"?$filter=contains(Email,'{Search}')";
+                url += $"?search={Search}";
             }
 
-            // TODO: Gọi API lấy danh sách tài khoản
-            // var response = await client.GetFromJsonAsync<ODataResponse<AccountDto>>(url);
-            // if (response != null) Accounts = response.Value;
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<List<AccountDto>>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (result != null)
+                    Accounts = result;
+            }
         }
+
 
         public class AccountDto
         {
-            public Guid Id { get; set; }
-            public string Email { get; set; }
-            public int Role { get; set; }
+            public short AccountId { get; set; }
+            public string? AccountEmail { get; set; }
+            public string? AccountName { get; set; }
+            public int? AccountRole { get; set; }
+            public string? AccountPassword { get; set; }
         }
 
-        // public class ODataResponse<T>
-        // {
-        //     public List<T> Value { get; set; }
-        // }
     }
 }
