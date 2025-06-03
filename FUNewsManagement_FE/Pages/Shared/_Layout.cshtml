@@ -10,42 +10,75 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">FUNewsManagement_FE</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-area="" asp-page="/Index">FUNewsManagement_FE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link text-dark fw-bold" asp-page="/Index">HomePage</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        @if (Context.Session.GetInt32("AccountId") != null)
+                        {
+                            var userRole = Context.Session.GetInt32("AccountRole");
+                            <li class="nav-item">
+                                <span class="nav-link text-primary fw-semibold">👋 Hello, @Context.Session.GetString("AccountName")!</span>
+                            </li>
+
+                            @if (userRole == 1)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger fw-bold" asp-page="/Admin/Home/Index">Admin Panel</a>
+                                </li>
+                            }
+                            else if (userRole == 2)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger fw-bold" asp-page="/Staff/Home/Index">Staff Panel</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <form method="post" asp-page="/Login" asp-page-handler="Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger ms-2">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-primary" asp-page="/Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - FUNewsManagement_FE - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
+    @* <footer class="border-top footer text-muted text-center py-3"> *@
+    @*     <div class="container"> *@
+    @*         © 2025 - FUNewsManagement_FE | <a asp-page="/Privacy">Privacy</a> *@
+    @*     </div> *@
+    @* </footer> *@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

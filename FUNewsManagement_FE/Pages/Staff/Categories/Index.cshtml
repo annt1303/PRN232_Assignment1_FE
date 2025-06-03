@@ -5,80 +5,512 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Quản lý danh mục</h2>
+<div class="container-fluid py-5 bg-page">
+    <div class="container">
+        <h2 class="mb-4 text-title">
+            Quản lý danh mục
+        </h2>
 
-<form method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="search" class="form-control" placeholder="Tìm theo tên danh mục..." value="@Model.Search" />
-        <button class="btn btn-outline-primary" type="submit">Tìm</button>
-    </div>
-</form>
-
-<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Thêm danh mục</button>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Tên danh mục</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Categories)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@(item.Status == 1 ? "Active" : "Inactive")</td>
-                <td>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" onclick="loadEdit('@item.Id')">Sửa</button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.Id')">Xóa</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Modal Tạo -->
-<div class="modal fade" id="createModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm danh mục</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <!-- Search Form -->
+        <form method="get" class="mb-5 animate-slide-in">
+            <div class="input-group shadow-lg rounded-full search-bar">
+                <input type="text" name="search" class="form-control border-0 py-3 search-input" placeholder="Tìm theo tên danh mục..." value="@Model.Search" />
+                <button type="submit" class="btn btn-primary fw-bold px-4 btn-search">
+                    <i class="bi bi-search me-2"></i>Tìm kiếm
+                </button>
             </div>
-            <div class="modal-body">
-                <!-- TODO: Form tạo danh mục -->
+        </form>
+
+        <!-- Add Button -->
+        <button class="btn btn-success mb-5 fw-bold px-4 py-3 rounded-full shadow-lg animate-bounce-in btn-add" data-bs-toggle="modal" data-bs-target="#createModal">
+            <i class="bi bi-plus-circle me-2"></i>Thêm danh mục
+        </button>
+
+        <!-- Table -->
+        <div class="card shadow-lg rounded-lg table-card animate-fade-in">
+            <table class="table table-hover m-0 table-content">
+                <thead class="table-header">
+                    <tr>
+                        <th class="py-4 px-4 text-center">Tên danh mục</th>
+                        <th class="py-4 px-4 text-center">Mô tả</th>
+                        <th class="py-4 px-4 text-center">Danh mục cha</th>
+                        <th class="py-4 px-4 text-center">Trạng thái</th>
+                        <th class="py-4 px-4 text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Categories)
+                    {
+                        <tr class="align-middle row-hover">
+                            <td class="py-3 px-4 text-center text-table">@item.categoryName</td>
+                            <td class="py-3 px-4 text-center text-table">@item.categoryDesciption</td>
+                            <td class="py-3 px-4 text-center text-table">@item.parentCategoryName</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge rounded-full @(item.Status == 1 ? "bg-success" : "bg-danger") badge-status">
+                                    @(item.Status == 1 ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button class="btn btn-sm btn-primary me-2 rounded-full shadow-sm btn-edit" onclick="loadEdit(@item.categoryId)">
+                                    <i class="bi bi-pencil me-1"></i>Sửa
+                                </button>
+                                <form method="post" asp-page-handler="Delete" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.categoryId" />
+                                    <button type="submit" class="btn btn-sm btn-danger rounded-full shadow-sm btn-delete" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">
+                                        <i class="bi bi-trash me-1"></i>Xóa
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-lg modal-content">
+            <div class="modal-header header-modal">
+                <h5 class="modal-title fw-bold" id="createModalLabel">Thêm danh mục</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="post" asp-page-handler="Create">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Tên danh mục</label>
+                        <input type="text" class="form-control shadow-sm rounded-full input-modal" asp-for="NewCategory.categoryName" required />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Mô tả</label>
+                        <textarea class="form-control shadow-sm rounded-lg input-modal" asp-for="NewCategory.categoryDesciption" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Danh mục cha</label>
+                        <select class="form-select shadow-sm rounded-full input-modal" asp-for="NewCategory.parentCategoryId" asp-items="@(new SelectList(Model.ParentCategories, "categoryId", "categoryName"))">
+                            <option value="0">Không có</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2 rounded-full shadow-sm btn-save">
+                            <i class="bi bi-save me-2"></i>Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-full shadow-sm btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Sửa -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa danh mục</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-lg modal-content">
+            <div class="modal-header header-modal">
+                <h5 class="modal-title fw-bold" id="editModalLabel">Chỉnh sửa danh mục</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- TODO: Form sửa danh mục bằng AJAX -->
+            <div class="modal-body p-4">
+                <form method="post" asp-page-handler="Edit">
+                    <input type="hidden" id="editCategoryId" name="EditCategory.categoryId" />
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Tên danh mục</label>
+                        <input type="text" class="form-control shadow-sm rounded-full input-modal" id="editCategoryName" name="EditCategory.categoryName" required />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Mô tả</label>
+                        <textarea class="form-control shadow-sm rounded-lg input-modal" id="editCategoryDescription" name="EditCategory.categoryDesciption" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Danh mục cha</label>
+                        <select class="form-select shadow-sm rounded-full input-modal" id="editParentCategoryId" name="EditCategory.parentCategoryId">
+                            <option value="0">Không có</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2 rounded-full shadow-sm btn-save">
+                            <i class="bi bi-save me-2"></i>Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-full shadow-sm btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
     <script>
-        function loadEdit(id) {
-            // TODO: Gọi API để lấy thông tin danh mục theo id
-        }
+        async function loadEdit(id) {
+            try {
+                const response = await fetch(`/Staff/Categories?handler=Edit&id=${id}`);
+                const data = await response.json();
 
-        function confirmDelete(id) {
-            if (confirm("Bạn có chắc muốn xóa danh mục này?")) {
-                // TODO: Gọi API DELETE /odata/Categories(ID)
+                if (data.editCategory) {
+                    document.getElementById("editCategoryId").value = data.editCategory.categoryId;
+                    document.getElementById("editCategoryName").value = data.editCategory.categoryName;
+                    document.getElementById("editCategoryDescription").value = data.editCategory.categoryDesciption;
+
+                    const parentCategorySelect = document.getElementById("editParentCategoryId");
+                    parentCategorySelect.innerHTML = '<option value="0">Không có</option>';
+                    data.parentCategories.forEach(category => {
+                        const option = document.createElement("option");
+                        option.value = category.categoryId;
+                        option.text = category.categoryName;
+                        if (category.categoryId === data.editCategory.parentCategoryId) {
+                            option.selected = true;
+                        }
+                        parentCategorySelect.appendChild(option);
+                    });
+
+                    const modal = new bootstrap.Modal(document.getElementById("editModal"));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error("Error loading category:", error);
             }
         }
+
+        // Animation on modal show
+        const modals = document.querySelectorAll('.modal-content');
+        modals.forEach(modal => {
+            modal.addEventListener('show.bs.modal', function () {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        // Hover effect for table rows
+        const rows = document.querySelectorAll('.row-hover');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                row.style.transform = 'translateY(-2px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.backgroundColor = '';
+                row.style.transform = 'translateY(0)';
+            });
+        });
     </script>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff, #d4e4ff);
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: #1a2a44;
+            line-height: 1.6;
+        }
+
+        /* Page background */
+        .bg-page {
+            background: linear-gradient(135deg, #f0f4ff, #d4e4ff);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        /* Title styles */
+        .text-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #007bff;
+            text-align: center;
+            background: linear-gradient(90deg, #007bff, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #007bff;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Search bar */
+        .search-bar {
+            background: #fff;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+            .search-bar:hover {
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            }
+
+        .search-input {
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            color: #1a2a44;
+            background: transparent;
+        }
+
+            .search-input::placeholder {
+                color: #6b7280;
+                opacity: 0.7;
+            }
+
+        .btn-search {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-search:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        /* Add button */
+        .btn-add {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-add:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+            }
+
+        /* Table card */
+        .table-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .table-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Table styles */
+        .table-content {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-header {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: #fff;
+            font-weight: 600;
+        }
+
+            .table-header th {
+                padding: 1rem;
+                font-size: 1rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+        .text-table {
+            color: #1a2a44;
+            font-size: 0.95rem;
+        }
+
+        .row-hover {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+            .row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.05);
+                transform: translateY(-2px);
+            }
+
+        /* Status badges */
+        .badge-status.bg-success {
+            background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        .badge-status.bg-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        /* Action buttons */
+        .btn-edit {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-edit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        .btn-delete {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-delete:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+
+        /* Modal styles */
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .modal-content.show {
+                transform: scale(1);
+            }
+
+        .header-modal {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: #fff;
+            border-bottom: none;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+        }
+
+            .header-modal .btn-close {
+                filter: brightness(0) invert(1);
+            }
+
+        .input-modal {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .input-modal:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+                outline: none;
+            }
+
+        .btn-save {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-save:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        .btn-cancel {
+            background: linear-gradient(90deg, #6b7280, #4b5563);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-cancel:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+            }
+
+        /* Form controls */
+        .form-control, .form-select {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+                outline: none;
+            }
+
+        /* General button styles */
+        .btn {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Animations */
+        .animate-slide-in {
+            animation: fadeIn 0.8s;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s;
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.8s;
+        }
+
+        /* Accessibility */
+        :focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
 }
