@@ -5,31 +5,393 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Lịch sử bài viết</h2>
+<div class="container-fluid py-5 bg-page">
+    <div class="container">
+        <h2 class="mb-4 text-title">Lịch sử bài viết của tôi</h2>
 
-@if (Model.NewsList?.Any() == true)
-{
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>Tiêu đề</th>
-                <th>Ngày tạo</th>
-                <th>Trạng thái</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.NewsList)
-            {
-                <tr>
-                    <td>@item.Title</td>
-                    <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
-                    <td>@(item.Status == 1 ? "Active" : "Inactive")</td>
-                </tr>
+        <!-- Hiển thị thông báo lỗi -->
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @Model.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model.NewsList?.Any() == true)
+        {
+            <!-- Table -->
+            <div class="card shadow-lg rounded-lg table-card animate-fade-in">
+                <table class="table table-hover m-0 table-content">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="py-4 px-4 text-center">Tiêu đề</th>
+                            <th class="py-4 px-4 text-center">Tiêu đề phụ</th>
+                            <th class="py-4 px-4 text-center">Nội dung</th>
+                            <th class="py-4 px-4 text-center">Danh mục</th>
+                            <th class="py-4 px-4 text-center">Trạng thái</th>
+                            <th class="py-4 px-4 text-center">Ngày tạo</th>
+                            <th class="py-4 px-4 text-center">Nguồn tin</th>
+                            <th class="py-4 px-4 text-center">Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.NewsList)
+                        {
+                            <tr class="align-middle row-hover">
+                                <td class="py-3 px-4 text-center text-table">@item.NewsTitle</td>
+                                <td class="py-3 px-4 text-center text-table">@item.Headline</td>
+                                <td class="py-3 px-4 text-center text-table">@(string.IsNullOrEmpty(item.NewsContent) ? "N/A" : item.NewsContent.Substring(0, Math.Min(item.NewsContent.Length, 50)) + (item.NewsContent.Length > 50 ? "..." : ""))</td>
+                                <td class="py-3 px-4 text-center text-table">@item.Category</td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="badge rounded-full @(item.NewsStatus ? "bg-success" : "bg-danger") badge-status">
+                                        @(item.NewsStatus ? "Hoạt động" : "Ngưng hoạt động")
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-center text-table">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="py-3 px-4 text-center text-table">@(string.IsNullOrEmpty(item.NewsSource) ? "N/A" : item.NewsSource)</td>
+                                <td class="py-3 px-4 text-center text-table">@string.Join(", ", Model.Tags.Where(t => item.TagIds.Contains(t.TagId)).Select(t => t.TagName))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted mt-4">Không có bài viết nào trong lịch sử.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Hover effect for table rows
+        const rows = document.querySelectorAll('.row-hover');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                row.style.transform = 'translateY(-2px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.backgroundColor = '';
+                row.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff, #d4e4ff);
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: #1a2a44;
+            line-height: 1.6;
+        }
+
+        /* Page background */
+        .bg-page {
+            background: linear-gradient(135deg, #f0f4ff, #d4e4ff);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        /* Title styles */
+        .text-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #007bff;
+            text-align: center;
+            background: linear-gradient(90deg, #007bff, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #007bff;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Search bar */
+        .search-bar {
+            background: #fff;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+            .search-bar:hover {
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Không có bài viết nào.</p>
+
+        .search-input {
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            color: #1a2a44;
+            background: transparent;
+        }
+
+            .search-input::placeholder {
+                color: #6b7280;
+                opacity: 0.7;
+            }
+
+        .btn-search {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-search:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        /* Add button */
+        .btn-add {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-add:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+            }
+
+        /* Table card */
+        .table-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow-x: auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .table-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Table styles */
+        .table-content {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 1200px; /* Ensure table is wide enough for all columns */
+        }
+
+        .table-header {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: #fff;
+            font-weight: 600;
+        }
+
+            .table-header th {
+                padding: 1rem;
+                font-size: 1rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+        .text-table {
+            color: #1a2a44;
+            font-size: 0.95rem;
+        }
+
+        .row-hover {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+            .row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.05);
+                transform: translateY(-2px);
+            }
+
+        /* Status badges */
+        .badge-status.bg-success {
+            background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        .badge-status.bg-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        /* Action buttons */
+        .btn-edit {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-edit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        .btn-delete {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-delete:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+
+        /* Modal styles */
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .modal-content.show {
+                transform: scale(1);
+            }
+
+        .header-modal {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: #fff;
+            border-bottom: none;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+        }
+
+            .header-modal .btn-close {
+                filter: brightness(0) invert(1);
+            }
+
+        .input-modal {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .input-modal:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+                outline: none;
+            }
+
+        .btn-save {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-save:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+        .btn-cancel {
+            background: linear-gradient(90deg, #6b7280, #4b5563);
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn-cancel:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+            }
+
+        /* Form controls */
+        .form-control, .form-select {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+                outline: none;
+            }
+
+        /* General button styles */
+        .btn {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Animations */
+        .animate-slide-in {
+            animation: fadeIn 0.8s;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s;
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.8s;
+        }
+
+        /* Accessibility */
+        :focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
 }
